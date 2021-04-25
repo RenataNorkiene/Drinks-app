@@ -49,18 +49,12 @@ public class JSON {
                     jsonObject.getString("strCategory"),
                     jsonObject.getString("strGlass")
             );
-            drinksList.add(drinks); //every objects of JSON goes true cycle and extracts data (country, lastUpdate etc.)
+            drinksList.add(drinks); //every objects of JSON goes true cycle and extracts data
         }
         return drinksList;
     }
     public static JSONArray getJSONArray(JSONObject jsonObject) throws JSONException{ //from array extract list
-        //remove from JSON all info, which is not needed, exept covid19Stats Array
-        //int jsonLength = jsonObject.toString().length();
-        //String covid19Stats = "{" + jsonObject.toString().substring(96, jsonLength) + "}"; //substring delete some symbols from string (starts from 96 till the end)
 
-        //string convert to JSONObject
-        //JSONObject jsonObject1 = new JSONObject(covid19Stats);
-        //JSONObject convert to JSONArray
         JSONArray jsonArray = jsonObject.getJSONArray("drinks");
         return jsonArray; //sita jsonArray paims aukstesnis metodas getList ir grazins mums sarasa
     }
@@ -68,13 +62,10 @@ public class JSON {
     public static ArrayList<Drinks> getDrinksListByName(ArrayList<Drinks> drinksArrayList, String coctailName){
         ArrayList<Drinks> drinksListByName = new ArrayList<Drinks>();
         for (Drinks drinks : drinksArrayList) { //kaireje bus sukuriamas tos klases objektas, per kurios sarasa iteruojame (desineje)
-            if(drinks.getName().contains(coctailName)){ //contains method (string method)  search part of string/word (country)
+            if(drinks.getName().contains(coctailName)){ //contains method (string method)  search part of string/word (drink)
                 drinksListByName.add(drinks);
             }
         }
         return drinksListByName;
     }
-
-
-
 }//json end

@@ -24,11 +24,11 @@ import java.net.HttpURLConnection;
 import java.util.ArrayList;
 
 public class SearchActivity extends AppCompatActivity {
-    public static final String DRINKS_API = "https://www.thecocktaildb.com/api/json/v1/1/search.php?s=";
-    private ArrayList<Drinks> drinksList = new ArrayList<Drinks>();
+    public static final String DRINKS_API = "https://www.thecocktaildb.com/api/json/v1/1/search.php?s=margarita";
+    private ArrayList<Drinks> drinksList = new ArrayList<Drinks>(); //sukuriamas saras
 
     private RecyclerView recyclerView; //korteliu vaizdas
-    private com.example.drinks.Adapter adapter; //tarpininkas tarp searchActivity ir xml, apjungia dvi skirtingas klases
+    private Adapter adapter; //tarpininkas tarp searchActivity ir xml, apjungia dvi skirtingas klases
 
     private SearchView searchView = null;
 
@@ -41,8 +41,10 @@ public class SearchActivity extends AppCompatActivity {
         AsyncFetch asyncFetch = new AsyncFetch();
         asyncFetch.execute();//must be called to start onPressExecute, doInBackground
     }
+
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) { //kad butu galimybe spausti it ieskoti reikia perrasyti metoda
+    public boolean onCreateOptionsMenu(Menu menu) {
+        //kad butu galimybe spausti it ieskoti reikia perrasyti metoda
 
         // adds item to action bar
         getMenuInflater().inflate(R.menu.search, menu);
@@ -82,12 +84,12 @@ public class SearchActivity extends AppCompatActivity {
             //is visu gerimu saraso sukuriamas sarasas pagal ieskoma gerima(query)
             ArrayList<Drinks> drinksListByName = JSON.getDrinksListByName(drinksList, query);
 
-            if (drinksList.size() == 0) {
+            if (drinksListByName.size() == 0) {
                 Toast.makeText(this, getResources().getString(R.string.search_no_results) + query, Toast.LENGTH_SHORT).show();
             }
             // duomenu perdavimas Adapteriui ir Recycleview sukurimas
             recyclerView = (RecyclerView) findViewById(R.id.drinks_list);
-            adapter = new com.example.drinks.Adapter(SearchActivity.this, drinksList);
+            adapter = new com.example.drinks.Adapter(SearchActivity.this, drinksListByName);
             recyclerView.setAdapter(adapter);
             recyclerView.setLayoutManager(new LinearLayoutManager(SearchActivity.this));
         }
@@ -97,7 +99,8 @@ public class SearchActivity extends AppCompatActivity {
         ProgressDialog progressDialog = new ProgressDialog(SearchActivity.this);
 
         @Override
-        protected void onPreExecute() { //method implemented before doInBackground, user waits till gets info from API
+        protected void onPreExecute() {
+            //method implemented before doInBackground, user waits till gets info from API
             super.onPreExecute();
             progressDialog.setMessage(getResources().getString(R.string.search_loading_data));
             progressDialog.setCancelable(false); //user has to wait, can't to cancel
@@ -107,7 +110,7 @@ public class SearchActivity extends AppCompatActivity {
         @Override
         protected JSONObject doInBackground(String... strings) { //will be executed while user waits (see progressDialog), gets JSON from API
             try {
-                JSONObject jsonObject = com.example.drinks.JSON.readJsonFromUrl(DRINKS_API); //sioje vietoje perduosime URL
+                JSONObject jsonObject = JSON.readJsonFromUrl(DRINKS_API); //sioje vietoje perduosime URL
                 return jsonObject;
             } catch (IOException e) { //input/output exeptions
                 Toast.makeText(
@@ -129,46 +132,20 @@ public class SearchActivity extends AppCompatActivity {
         protected void onPostExecute(JSONObject jsonObject) {
             progressDialog.dismiss();
 
-            int statusCode = 0; //kol kas jo dar nezinome, todel 0
+            JSONArray jsonArray = null;
             try {
-                statusCode = jsonObject.getInt("statusCode");
-            } catch (JSONException e) {
-                Toast.makeText(
-                        SearchActivity.this,
-                        getResources().getString(R.string.search_error_reading_data) + e.getMessage(),
-                        Toast.LENGTH_LONG
-                ).show();
-            }//catch ends
-            if (statusCode == HttpURLConnection.HTTP_OK) {
-                //system.err.println(jsonObject.toString());
-                JSONArray jsonArray = null;
-                try {
-                    jsonArray = com.example.drinks.JSON.getJSONArray(jsonObject);
-                    drinksList = com.example.drinks.JSON.getList(jsonArray);
+                jsonArray = com.example.drinks.JSON.getJSONArray(jsonObject);
+                drinksList = com.example.drinks.JSON.getList(jsonArray);
 
-                } catch (JSONException e) {
-                    System.out.println(getResources().getString(R.string.search_error_reading_data) + e.getMessage());
-                }
-//
-            } else { //if something is wrong, not ok(200 code)
-                String message = null; //susikuriame nes nezinome kokia bus zinute
-                try {
-                    message = jsonObject.getString("message");
-                } catch (JSONException e) {
-                    Toast.makeText(
-                            SearchActivity.this,
-                            getResources().getString(R.string.search_error_reading_data) + e.getMessage(),
-                            Toast.LENGTH_LONG
-                    ).show();
-                } //catch ends
-                Toast.makeText(
-                        SearchActivity.this,
-                        getResources().getString(R.string.search_error_reading_data) + message, //message = kokia zinute ateina is API
-                        Toast.LENGTH_LONG
+
+            } catch (JSONException e) {
+                Toast.makeText(SearchActivity.this,
+                        getResources().getString(R.string.search_error_reading_data) + e.getMessage(), Toast.LENGTH_LONG
                 ).show();
-            } //else ends
-        } //onPostExecute ends
-    } //AsyncFetch class ends
-    //jeigu reiks dar kokiu metodu, rasysime cia
+            } //catch ends
+
+    } //onPostExecute ends
+} //AsyncFetch class ends
+//jeigu reiks dar kokiu metodu, rasysime cia
 } //SearchActivity class ends
 
