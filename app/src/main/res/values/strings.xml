@@ -1,5 +1,5 @@
 <resources>
-<string name="app_name">Drinks app</string>
+<string name="app_name">Drinks</string>
 <string name="app_title">Choose your drink</string>
 
 <string name="login_username">Username</string>

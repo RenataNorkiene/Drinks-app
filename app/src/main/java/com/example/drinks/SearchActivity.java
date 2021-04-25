@@ -81,6 +81,7 @@ public class SearchActivity extends AppCompatActivity {
                 searchView.clearFocus();
 
             }
+
             //is visu gerimu saraso sukuriamas sarasas pagal ieskoma gerima(query)
             ArrayList<Drinks> drinksListByName = JSON.getDrinksListByName(drinksList, query);
 
@@ -108,11 +109,12 @@ public class SearchActivity extends AppCompatActivity {
         }
 
         @Override
-        protected JSONObject doInBackground(String... strings) { //will be executed while user waits (see progressDialog), gets JSON from API
+        protected JSONObject doInBackground(String... strings) {
+            //will be executed while user waits (see progressDialog), gets JSON from API
             try {
                 JSONObject jsonObject = JSON.readJsonFromUrl(DRINKS_API); //sioje vietoje perduosime URL
                 return jsonObject;
-            } catch (IOException e) { //input/output exeptions
+            } catch (IOException e) { //input/output exceptions
                 Toast.makeText(
                         SearchActivity.this,
                         getResources().getString(R.string.search_error_reading_data) + e.getMessage(),
